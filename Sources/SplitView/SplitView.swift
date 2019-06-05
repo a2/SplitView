@@ -1,23 +1,28 @@
 import SwiftUI
 
 public struct SplitView<Master: View, Detail: View>: View {
-    public var master: UIHostingController<Master>
-    public var detail: UIHostingController<Detail>
+    public var master: Master
+    public var detail: Detail
     @State public var preferredDisplayMode = UISplitViewController.DisplayMode.automatic
 
     public init(master: Master, detail: Detail) {
-        self.master = UIHostingController(rootView: master)
-        self.detail = UIHostingController(rootView: detail)
+        self.init(master: master, detail: detail, preferredDisplayMode: .automatic)
+    }
+
+    init(master: Master, detail: Detail, preferredDisplayMode: UISplitViewController.DisplayMode) {
+        self.master = master
+        self.detail = detail
+        self.preferredDisplayMode = preferredDisplayMode
     }
 
     public var body: some View {
-        SplitViewController(controllers: [master, detail], preferredDisplayMode: $preferredDisplayMode)
+        let controllers = [UIHostingController(rootView: master), UIHostingController(rootView: detail)]
+        return SplitViewController(controllers: controllers, preferredDisplayMode: $preferredDisplayMode)
     }
 }
 
 public extension SplitView {
     func preferredDisplayMode(_ preferredDisplayMode: UISplitViewController.DisplayMode) -> Self {
-        self.preferredDisplayMode = preferredDisplayMode
-        return self
+        return SplitView(master: master, detail: detail, preferredDisplayMode: preferredDisplayMode)
     }
 }
